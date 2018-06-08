@@ -542,7 +542,7 @@ contract FreezableToken is StandardToken, Ownable {
  * @title Ceybits Token smart contract
  */
 contract CeybitsToken is FreezableToken, PausableToken {
-    string public constant name = "\"Ceybits\" Utility Token";
+    string public constant name = "Ceybits";
     string public constant symbol = "CYBT";
     uint8 public constant decimals = 18;
 
@@ -661,7 +661,7 @@ contract CeybitsICO is Ownable {
     event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
     event StageStarted(uint256 tokens, uint256 startDate);
     event StageFinished(uint256 time);
-    event EthClaimed(uint256 amount);
+    event EthClaimed(address claimer, uint256 amount);
     event RateChanges(uint256 oldRate, uint256 newRate);
 
     
@@ -737,7 +737,6 @@ contract CeybitsICO is Ownable {
     
         _updatePurchasingState(tokens);
     
-        _forwardFunds(weiAmount);
         _postValidatePurchase(weiAmount);
     }
   
@@ -818,9 +817,9 @@ contract CeybitsICO is Ownable {
     /**
      * @dev Determines how ETH is stored/forwarded on purchases.
     */
-    function _forwardFunds(uint256 _weiAmount) internal {
-        owner.transfer(_weiAmount);
-        emit EthClaimed(_weiAmount);
+    function _forwardFunds(address _claimer, uint256 _weiAmount) onlyOwner public {
+        _claimer.transfer(_weiAmount);
+        emit EthClaimed(_claimer, _weiAmount);
     }
     
     /**
